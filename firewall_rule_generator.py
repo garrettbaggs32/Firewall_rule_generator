@@ -259,20 +259,27 @@ def random_destination_address():
 
 def random_service_value():
     protocols = ["TCP", "UDP"]
-    # Common ports from the cheat sheet
-    common_ports = [20, 21, 22, 23, 25, 53, 80, 110, 139, 143, 443, 445, 3389]
+    # Highly prioritized TCP ports
+    high_freq_tcp_ports = [23, 443, 3389, 8080, 53, 80]
+    # Other common ports
+    other_common_ports = [20, 21, 22, 25, 110, 139, 143, 445]
     well_known_ports = list(range(1, 1024))
-    other_ports = [8080, 8443, 10000, 20000, 30000, 40000, 50000]
+    other_ports = [8443, 10000, 20000, 30000, 40000, 50000]
 
-    proto = random.choice(protocols)
     r = random.random()
     if r < 0.7:  # Well-known ports
-        if random.random() < 0.8:  # Prioritize common ports
-            port = random.choice(common_ports)
-        else:
+        if random.random() < 0.5:  # 50% chance for high frequency TCP ports
+            port = random.choice(high_freq_tcp_ports)
+            proto = "TCP"
+        elif random.random() < 0.8:  # 40% chance for other common ports
+            port = random.choice(other_common_ports)
+            proto = random.choice(protocols)
+        else:  # 10% chance for other well-known ports
             port = random.choice(well_known_ports)
+            proto = random.choice(protocols)
     else:  # Other ports
         port = random.choice(other_ports)
+        proto = random.choice(protocols)
     return f"{proto}_{port}"
 
 def random_service_range():
